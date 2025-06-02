@@ -59,6 +59,6 @@ runs:
     ARG_OPERATION: ${{ inputs.operation }}
     ARG_MUTEX_KEY: ${{ inputs.mutex-key }}
     ARG_POST_EXECUTION: ${{ inputs.run-post-execution }}
-  entrypoint: sh -c "/scripts/main.sh $ARG_OPERATION"
+  entrypoint: sh -c \"/scripts/main.sh $ARG_OPERATION\"
   post-if: "inputs.run-post-execution == 'true'"
-  post-entrypoint: sh -c "/scripts/main.sh unlock"
+  post-entrypoint: sh -c \"/scripts/main.sh unlock\"

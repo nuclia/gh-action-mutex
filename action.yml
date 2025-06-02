@@ -60,5 +60,5 @@ runs:
     ARG_MUTEX_KEY: ${{ inputs.mutex-key }}
     ARG_POST_EXECUTION: ${{ inputs.run-post-execution }}
   entrypoint: /scripts/main.sh
-  post-if: inputs.run-post-execution == 'true'
+  post-if: github.event.inputs.run-post-execution == 'true'
   post-entrypoint: /scripts/unlock.sh

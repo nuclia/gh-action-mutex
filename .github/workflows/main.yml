@@ -63,3 +63,33 @@ jobs:
           echo "I am protected!"
           sleep 5
 
+  simple_test_custom_lock:
+    runs-on: ubuntu-latest
+    name: Simple mutex test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up mutex
+        uses: ./
+        with:
+          mutex-key: "custom-lock"
+          branch: gh-mutex-custom-lock-test
+          run-post-execution: "false"
+      - run: |
+          echo "I am protected!"
+          sleep 5
+  
+  simple_test_custom_unlock:
+    runs-on: ubuntu-latest
+    name: Simple mutex test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Release up mutex
+        uses: ./
+        with:
+          mutex-key: "custom-lock"
+          branch: gh-mutex-custom-lock-test
+          operation: "unlock"
+          run-post-execution: "false"
+      - run: |
+          echo "I am protected!"
+          sleep 5

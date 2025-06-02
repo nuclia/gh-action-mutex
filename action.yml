@@ -40,7 +40,7 @@ inputs:
   run-post-execution:
     description: "If true and the main operation is 'lock', runs the post-job action to unlock the mutex"
     required: false
-    default: "false"
+    default: "true"
 runs:
   using: 'docker'
   image: 'Dockerfile'

@@ -40,7 +40,7 @@ inputs:
   run-post-execution:
     description: "If true and the main operation is 'lock', runs the post-job action to unlock the mutex"
     required: false
-    default: 'enabled'
+    default: 'true'
   mutex-key:
     description: 'The mutex key to use for the lock. If not set, a default key will be used.'
     required: false
@@ -60,5 +60,4 @@ runs:
     ARG_MUTEX_KEY: ${{ inputs.mutex-key }}
     ARG_POST_EXECUTION: ${{ inputs.run-post-execution }}
   entrypoint: /scripts/main.sh
-  post-if: env.ARG_POST_EXECUTION == 'enabled'
   post-entrypoint: /scripts/unlock.sh

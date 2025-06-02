@@ -29,6 +29,7 @@ jobs:
         uses: ./
         with:
           branch: gh-mutex-two-clients-test
+          mutex-key: client-1
       - run: |
           echo "I am protected! (Client 1)"
           sleep 20
@@ -43,6 +44,7 @@ jobs:
         uses: ./
         with:
           branch: gh-mutex-two-clients-test
+          mutex-key: client-2
       - run: |
           echo "I am protected! (Client 2)"
           sleep 20
@@ -56,8 +58,40 @@ jobs:
       - name: Set up mutex
         uses: ./
         with:
-          debug: "true"
+          debug: 'true'
       - run: |
           echo "I am protected!"
           sleep 5
 
+  simple_test_custom_lock:
+    runs-on: ubuntu-latest
+    name: Mutex test with custom lock and skip post-execution
+    needs: [debug_test]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up mutex
+        uses: ./
+        with:
+          mutex-key: "custom-lock"
+          branch: gh-mutex-custom-lock-test
+          run-post-execution: 'false'
+      - run: |
+          echo "I am protected!"
+          sleep 5
+  
+  simple_test_custom_unlock:
+    runs-on: ubuntu-latest
+    name: Test unlocking a custom lock
+    needs: [simple_test_custom_lock]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Release up mutex
+        uses: ./
+        with:
+          mutex-key: "custom-lock"
+          branch: gh-mutex-custom-lock-test
+          operation: unlock
+          run-post-execution: 'false'
+      - run: |
+          echo "I am protected!"
+          sleep 5

@@ -65,3 +65,4 @@ Mutexes are implemented using simple [spinlocks](https://en.wikipedia.org/wiki/S
 
 - [actions/checkout](https://github.com/actions/checkout) for the authentication logic using `GITHUB_TOKEN`.
 
+Trigger2

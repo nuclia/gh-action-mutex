@@ -33,6 +33,14 @@ inputs:
     description: 'Ticket id suffix to avoid identical values for parallel/matrix jobs in the same workflow run'
     required: false
     default: 'default'
+  operation:
+    description: 'The operation to perform: lock or unlock'
+    required: false
+    default: 'lock'
+  run-post-execution:
+    description: "If true and the main operation is 'lock', runs the post-job action to unlock the mutex"
+    required: false
+    default: "false"
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -44,6 +52,7 @@ runs:
     ARG_REPO_TOKEN: ${{ inputs.repo-token }}
     ARG_DEBUG: ${{ inputs.debug }}
     ARG_TICKET_ID_SUFFIX: ${{ inputs.ticket-id-suffix}}
-  entrypoint: '/scripts/lock.sh'
-  post-entrypoint: '/scripts/unlock.sh'
-
+    ARG_OPERATION: ${{ inputs.operation }}
+  entrypoint: '/scripts/main.sh ${{ inputs.operation }}'
+  post-if: "inputs.run-post-execution == 'true'"
+  post-entrypoint: '/scripts/main.sh unlock'

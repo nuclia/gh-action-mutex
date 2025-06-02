@@ -22,15 +22,23 @@ __repo_url="https://x-access-token:$ARG_REPO_TOKEN@$ARG_GITHUB_SERVER/$ARG_REPOS
 set_up_repo "$__repo_url"
 
 if [ "$OPERATION" == "lock" ]; then
-  __ticket_id="$GITHUB_RUN_ID-$(date +%s)-$(( $RANDOM % 1000 ))-$ARG_TICKET_ID_SUFFIX"
+  __ticket_id="$GITHUB_RUN_ID-$ARG_MUTEX_KEY-$ARG_TICKET_ID_SUFFIX"
   echo "ticket_id=$__ticket_id" >> $GITHUB_STATE
   enqueue $ARG_BRANCH $__mutex_queue_file $__ticket_id
   wait_for_lock $ARG_BRANCH $__mutex_queue_file $__ticket_id
   echo "Lock successfully acquired"
+
 elif [ "$OPERATION" == "unlock" ]; then
-  __ticket_id="$STATE_ticket_id"
+  
+  if [ "$ARG_POST_EXECUTION" == "true" ]; then
+    __ticket_id="$STATE_ticket_id"
+  else
+    __ticket_id="$GITHUB_RUN_ID-$ARG_MUTEX_KEY-$ARG_TICKET_ID_SUFFIX"
+  fi
+  
   dequeue $ARG_BRANCH $__mutex_queue_file $__ticket_id
   echo "Successfully unlocked"
+
 else
   echo "Invalid operation: $OPERATION. Must be 'lock' or 'unlock'."
   exit 1

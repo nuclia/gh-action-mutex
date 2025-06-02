@@ -41,6 +41,10 @@ inputs:
     description: "If true and the main operation is 'lock', runs the post-job action to unlock the mutex"
     required: false
     default: "true"
+  mutex-key:
+    description: 'The mutex key to use for the lock. If not set, a default key will be used.'
+    required: false
+    default: 'default'  
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -53,6 +57,8 @@ runs:
     ARG_DEBUG: ${{ inputs.debug }}
     ARG_TICKET_ID_SUFFIX: ${{ inputs.ticket-id-suffix}}
     ARG_OPERATION: ${{ inputs.operation }}
+    ARG_MUTEX_KEY: ${{ inputs.mutex-key }}
+    ARG_POST_EXECUTION: ${{ inputs.run-post-execution }}
   entrypoint: '/scripts/main.sh ${{ inputs.operation }}'
   post-if: "inputs.run-post-execution == 'true'"
   post-entrypoint: '/scripts/main.sh unlock'

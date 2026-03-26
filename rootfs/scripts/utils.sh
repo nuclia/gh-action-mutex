@@ -20,7 +20,7 @@ update_branch() {
 	git switch --orphan gh-action-mutex/temp-branch-$(date +%s) --quiet
 	git branch -D $__branch --quiet 2>/dev/null || true
 	git fetch origin $__branch --quiet 2>/dev/null
-	git checkout $__branch --quiet
+	git checkout -B $__branch origin/$__branch --quiet
 	git switch --orphan $__branch --quiet
 }
 

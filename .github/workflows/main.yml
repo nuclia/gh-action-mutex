@@ -133,6 +133,7 @@ jobs:
       - name: Set up mutex with GitHub App
         uses: ./
         with:
+          ticket-id-suffix: "client-1"
           github-app-id: ${{ vars.GHAPP_NUCLIA_SERVICE_BOT_ID }}
           github-app-private-key: ${{ secrets.GHAPP_NUCLIA_SERVICE_BOT_PK }}
           branch: gh-mutex-app-auth-test
@@ -148,11 +149,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: |
-          echo "Simulated concurrent client acquiring lock with GitHub App auth. Waiting for 10 seconds to let the first client acquire the lock..."
-          sleep 10
+          echo "Simulated concurrent client acquiring lock with GitHub App auth. Waiting for 5 seconds to let the first client acquire the lock..."
+          sleep 5
       - name: Set up mutex with GitHub App
         uses: ./
         with:
+          ticket-id-suffix: "client-2"
           github-app-id: ${{ vars.GHAPP_NUCLIA_SERVICE_BOT_ID }}
           github-app-private-key: ${{ secrets.GHAPP_NUCLIA_SERVICE_BOT_PK }}
           branch: gh-mutex-app-auth-test

@@ -44,7 +44,23 @@ inputs:
   mutex-key:
     description: 'The mutex key to use for the lock. If not set, a default key will be used.'
     required: false
-    default: 'default'  
+    default: 'default'
+  github-app-id:
+    description: 'GitHub App ID for authentication. Use together with github-app-private-key instead of repo-token.'
+    required: false
+    default: ''
+  github-app-private-key:
+    description: 'GitHub App private key (PEM format) for authentication. Use together with github-app-id.'
+    required: false
+    default: ''
+  github-app-installation-id:
+    description: 'GitHub App installation ID. If not provided, it will be auto-detected from the repository.'
+    required: false
+    default: ''
+  token-refresh-interval:
+    description: 'Interval in seconds between GitHub App token refreshes. Defaults to 2700 (45 minutes).'
+    required: false
+    default: '2700'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -59,5 +75,9 @@ runs:
     ARG_OPERATION: ${{ inputs.operation }}
     ARG_MUTEX_KEY: ${{ inputs.mutex-key }}
     ARG_POST_EXECUTION: ${{ inputs.run-post-execution }}
+    ARG_GITHUB_APP_ID: ${{ inputs.github-app-id }}
+    ARG_GITHUB_APP_PRIVATE_KEY: ${{ inputs.github-app-private-key }}
+    ARG_GITHUB_APP_INSTALLATION_ID: ${{ inputs.github-app-installation-id }}
+    ARG_TOKEN_REFRESH_INTERVAL: ${{ inputs.token-refresh-interval }}
   entrypoint: /scripts/main.sh
   post-entrypoint: /scripts/unlock.sh

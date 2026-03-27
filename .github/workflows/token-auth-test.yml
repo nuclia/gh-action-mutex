@@ -1,0 +1,37 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  simple_test_github_token_test:
+    runs-on: ubuntu-latest
+    name: Mutex test with GitHub Token authentication
+    steps:
+      - uses: actions/checkout@v6
+      - name: Generate Github Token
+        id: app-token
+        uses: actions/create-github-app-token@v3.0.0
+        with:
+          app-id: ${{ vars.GHAPP_NUCLIA_SERVICE_BOT_ID }}
+          private-key: ${{ secrets.GHAPP_NUCLIA_SERVICE_BOT_PK }}
+          owner: nuclia
+
+      - name: Set up mutex
+        uses: ./
+        with:
+          mutex-key: "token-lock"
+          repo-token: ${{ steps.app-token.outputs.token }}
+          branch: gh-mutex-token-auth-test
+      - name: Simulate long-running task to test token refresh
+        run: |
+          echo "I am protected!"
+          sleep 5

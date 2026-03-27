@@ -9,6 +9,7 @@ on:
 
 permissions:
   id-token: write
+  contents: write
 
 jobs:
   simple_test:
@@ -137,4 +138,4 @@ jobs:
           branch: gh-mutex-app-auth-test
       - run: |
           echo "I am protected via GitHub App auth!"
-          sleep 5
+          sleep 120

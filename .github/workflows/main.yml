@@ -56,7 +56,7 @@ jobs:
   debug_test:
     runs-on: ubuntu-latest
     name: Test the debug flag
-    needs: [two_clients_test_client_1, two_clients_test_client_2]
+    needs: [simple_test]
     steps:
       - uses: actions/checkout@v3
       - name: Set up mutex
@@ -70,7 +70,7 @@ jobs:
   simple_test_custom_lock:
     runs-on: ubuntu-latest
     name: Mutex test with custom lock and skip post-execution
-    needs: [debug_test]
+    needs: [simple_test]
     steps:
       - uses: actions/checkout@v3
       - name: Set up mutex
@@ -137,5 +137,5 @@ jobs:
           github-app-private-key: ${{ secrets.GHAPP_NUCLIA_SERVICE_BOT_PK }}
           branch: gh-mutex-app-auth-test
       - run: |
-          echo "I am protected via GitHub App auth!"
-          sleep 120
+          echo "I am protected via GitHub App auth! Waiting for 60 seconds to test token expiration handling..."
+          sleep 60

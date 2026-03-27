@@ -4,15 +4,17 @@ on:
       - main
   pull_request:
     branches:
-      - 'main'
+      - "main"
   workflow_dispatch:
+
+name: Test Mutex Action
 
 jobs:
   simple_test:
     runs-on: ubuntu-latest
     name: Simple mutex test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
       - run: |
@@ -24,7 +26,7 @@ jobs:
     name: Two clients test (client 1)
     needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
         with:
@@ -39,7 +41,7 @@ jobs:
     name: Two clients test (client 2)
     needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
         with:
@@ -52,13 +54,13 @@ jobs:
   debug_test:
     runs-on: ubuntu-latest
     name: Test the debug flag
-    needs: [two_clients_test_client_1,two_clients_test_client_2]
+    needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
         with:
-          debug: 'true'
+          debug: "true"
       - run: |
           echo "I am protected!"
           sleep 5
@@ -66,32 +68,32 @@ jobs:
   simple_test_custom_lock:
     runs-on: ubuntu-latest
     name: Mutex test with custom lock and skip post-execution
-    needs: [debug_test]
+    needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
         with:
           mutex-key: "custom-lock"
           branch: gh-mutex-custom-lock-test
-          run-post-execution: 'false'
+          run-post-execution: "false"
       - run: |
           echo "I am protected!"
           sleep 5
-  
+
   simple_test_custom_unlock:
     runs-on: ubuntu-latest
     name: Test unlocking a custom lock
     needs: [simple_test_custom_lock]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Release up mutex
         uses: ./
         with:
           mutex-key: "custom-lock"
           branch: gh-mutex-custom-lock-test
           operation: unlock
-          run-post-execution: 'false'
+          run-post-execution: "false"
       - run: |
           echo "I am protected!"
           sleep 5

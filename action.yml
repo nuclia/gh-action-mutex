@@ -59,5 +59,9 @@ runs:
     ARG_OPERATION: ${{ inputs.operation }}
     ARG_MUTEX_KEY: ${{ inputs.mutex-key }}
     ARG_POST_EXECUTION: ${{ inputs.run-post-execution }}
+    ARG_GITHUB_APP_ID: ${{ inputs.github-app-id }}
+    ARG_GITHUB_APP_PRIVATE_KEY: ${{ inputs.github-app-private-key }}
+    ARG_GITHUB_APP_INSTALLATION_ID: ${{ inputs.github-app-installation-id }}
+    ARG_TOKEN_REFRESH_INTERVAL: ${{ inputs.token-refresh-interval }}
   entrypoint: /scripts/main.sh
   post-entrypoint: /scripts/unlock.sh

@@ -1,3 +1,23 @@
+TOKEN_FILE="/tmp/github_app_token"
+
+# Get the current authentication token.
+# Reads from the token file (refreshed by the app auth daemon) if present,
+# otherwise falls back to the static ARG_REPO_TOKEN.
+get_current_token() {
+	if [ -f "$TOKEN_FILE" ]; then
+		cat "$TOKEN_FILE"
+	else
+		echo "$ARG_REPO_TOKEN"
+	fi
+}
+
+# Update the git remote URL with the latest token.
+refresh_remote_url() {
+	local token
+	token=$(get_current_token)
+	git remote set-url origin "https://x-access-token:${token}@${ARG_GITHUB_SERVER}/${ARG_REPOSITORY}"
+}
+
 # Set up the mutex repo
 # args:
 #   $1: repo_url
@@ -62,6 +82,7 @@ enqueue() {
 		git commit -m "[$__ticket_id] Enqueue " --quiet
 
 		set +e # allow errors
+		refresh_remote_url
 		git push --set-upstream origin $__branch --quiet
 		__has_error=$((__has_error + $?))
 		set -e

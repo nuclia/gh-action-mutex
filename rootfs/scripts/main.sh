@@ -7,6 +7,12 @@ fi
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source "$SCRIPT_DIR/utils.sh"
+source "$SCRIPT_DIR/github_app_auth.sh"
+
+# Initialize GitHub App authentication if credentials are provided
+if [ -n "$ARG_GITHUB_APP_ID" ] && [ -n "$ARG_GITHUB_APP_PRIVATE_KEY" ]; then
+  init_github_app_auth
+fi
 
 # Determine operation: use $1 if provided, otherwise use $ARG_OPERATION
 OPERATION=${1:-$ARG_OPERATION}

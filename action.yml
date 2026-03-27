@@ -44,7 +44,7 @@ inputs:
   mutex-key:
     description: 'The mutex key to use for the lock. If not set, a default key will be used.'
     required: false
-    default: 'default'  
+    default: 'default'
 runs:
   using: 'docker'
   image: 'Dockerfile'

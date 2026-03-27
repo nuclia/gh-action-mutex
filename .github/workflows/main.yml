@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Simple mutex test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
       - run: |
@@ -28,7 +28,7 @@ jobs:
     name: Two clients test (client 1)
     needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
         with:
@@ -43,7 +43,7 @@ jobs:
     name: Two clients test (client 2)
     needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
         with:
@@ -58,7 +58,7 @@ jobs:
     name: Test the debug flag
     needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
         with:
@@ -72,7 +72,7 @@ jobs:
     name: Mutex test with custom lock and skip post-execution
     needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex
         uses: ./
         with:
@@ -88,7 +88,7 @@ jobs:
     name: Test unlocking a custom lock
     needs: [simple_test_custom_lock]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Release up mutex
         uses: ./
         with:
@@ -105,7 +105,7 @@ jobs:
     name: Mutex test with GitHub Token authentication
     needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Generate Github Token
         id: app-token
         uses: actions/create-github-app-token@v3.0.0
@@ -129,7 +129,7 @@ jobs:
     name: GitHub App authentication test
     needs: [simple_test]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up mutex with GitHub App
         uses: ./
         with:

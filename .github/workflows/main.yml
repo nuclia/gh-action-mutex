@@ -136,6 +136,7 @@ jobs:
           github-app-id: ${{ vars.GHAPP_NUCLIA_SERVICE_BOT_ID }}
           github-app-private-key: ${{ secrets.GHAPP_NUCLIA_SERVICE_BOT_PK }}
           branch: gh-mutex-app-auth-test
+          token-refresh-interval: 30 # 1 minute for testing purposes
       - run: |
           echo "I am protected via GitHub App auth! Waiting for 60 seconds to test token expiration handling..."
-          sleep 60
+          sleep 45

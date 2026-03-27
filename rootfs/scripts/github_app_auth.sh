@@ -5,7 +5,7 @@
 
 REFRESH_PID_FILE="/tmp/github_app_refresh.pid"
 INSTALLATION_ID_FILE="/tmp/github_app_installation_id"
-TOKEN_REFRESH_INTERVAL=2700 # 45 minutes
+TOKEN_REFRESH_INTERVAL=${ARG_TOKEN_REFRESH_INTERVAL:-2700}
 
 # Base64url encode from stdin
 _base64url_encode() {

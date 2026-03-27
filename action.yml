@@ -57,6 +57,10 @@ inputs:
     description: 'GitHub App installation ID. If not provided, it will be auto-detected from the repository.'
     required: false
     default: ''
+  token-refresh-interval:
+    description: 'Interval in seconds between GitHub App token refreshes. Defaults to 2700 (45 minutes).'
+    required: false
+    default: '2700'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -74,5 +78,6 @@ runs:
     ARG_GITHUB_APP_ID: ${{ inputs.github-app-id }}
     ARG_GITHUB_APP_PRIVATE_KEY: ${{ inputs.github-app-private-key }}
     ARG_GITHUB_APP_INSTALLATION_ID: ${{ inputs.github-app-installation-id }}
+    ARG_TOKEN_REFRESH_INTERVAL: ${{ inputs.token-refresh-interval }}
   entrypoint: /scripts/main.sh
   post-entrypoint: /scripts/unlock.sh

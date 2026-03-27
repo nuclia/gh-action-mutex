@@ -7,6 +7,8 @@ on:
       - "main"
   workflow_dispatch:
 
+name: Test Mutex Action
+
 jobs:
   simple_test:
     runs-on: ubuntu-latest

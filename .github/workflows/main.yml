@@ -147,6 +147,9 @@ jobs:
     needs: [simple_test]
     steps:
       - uses: actions/checkout@v6
+      - run: |
+          echo "Simulated concurrent client acquiring lock with GitHub App auth. Waiting for 10 seconds to let the first client acquire the lock..."
+          sleep 10
       - name: Set up mutex with GitHub App
         uses: ./
         with:

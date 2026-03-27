@@ -4,8 +4,11 @@ on:
       - main
   pull_request:
     branches:
-      - 'main'
+      - "main"
   workflow_dispatch:
+
+permissions:
+  id-token: write
 
 jobs:
   simple_test:
@@ -52,13 +55,13 @@ jobs:
   debug_test:
     runs-on: ubuntu-latest
     name: Test the debug flag
-    needs: [two_clients_test_client_1,two_clients_test_client_2]
+    needs: [two_clients_test_client_1, two_clients_test_client_2]
     steps:
       - uses: actions/checkout@v3
       - name: Set up mutex
         uses: ./
         with:
-          debug: 'true'
+          debug: "true"
       - run: |
           echo "I am protected!"
           sleep 5
@@ -74,11 +77,11 @@ jobs:
         with:
           mutex-key: "custom-lock"
           branch: gh-mutex-custom-lock-test
-          run-post-execution: 'false'
+          run-post-execution: "false"
       - run: |
           echo "I am protected!"
           sleep 5
-  
+
   simple_test_custom_unlock:
     runs-on: ubuntu-latest
     name: Test unlocking a custom lock
@@ -91,7 +94,47 @@ jobs:
           mutex-key: "custom-lock"
           branch: gh-mutex-custom-lock-test
           operation: unlock
-          run-post-execution: 'false'
+          run-post-execution: "false"
       - run: |
           echo "I am protected!"
+          sleep 5
+
+  simple_test_github_token_test:
+    runs-on: ubuntu-latest
+    name: Mutex test with GitHub Token authentication
+    needs: [simple_test]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate Github Token
+        id: app-token
+        uses: actions/create-github-app-token@v3.0.0
+        with:
+          app-id: ${{ vars.GHAPP_NUCLIA_SERVICE_BOT_ID }}
+          private-key: ${{ secrets.GHAPP_NUCLIA_SERVICE_BOT_PK }}
+          owner: nuclia
+
+      - name: Set up mutex
+        uses: ./
+        with:
+          mutex-key: "token-lock"
+          repo-token: ${{ steps.app-token.outputs.token }}
+          branch: gh-mutex-token-auth-test
+      - run: |
+          echo "I am protected!"
+          sleep 5
+
+  github_app_auth_test:
+    runs-on: ubuntu-latest
+    name: GitHub App authentication test
+    needs: [simple_test]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up mutex with GitHub App
+        uses: ./
+        with:
+          github-app-id: ${{ vars.GHAPP_NUCLIA_SERVICE_BOT_ID }}
+          github-app-private-key: ${{ secrets.GHAPP_NUCLIA_SERVICE_BOT_PK }}
+          branch: gh-mutex-app-auth-test
+      - run: |
+          echo "I am protected via GitHub App auth!"
           sleep 5

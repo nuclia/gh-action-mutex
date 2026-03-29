@@ -45,6 +45,22 @@ inputs:
     description: 'The mutex key to use for the lock. If not set, a default key will be used.'
     required: false
     default: 'default'
+  github-app-id:
+    description: 'GitHub App ID for authentication. Use together with github-app-private-key instead of repo-token.'
+    required: false
+    default: ''
+  github-app-private-key:
+    description: 'GitHub App private key (PEM format) for authentication. Use together with github-app-id.'
+    required: false
+    default: ''
+  github-app-installation-id:
+    description: 'GitHub App installation ID. If not provided, it will be auto-detected from the repository.'
+    required: false
+    default: ''
+  token-refresh-interval:
+    description: 'Interval in seconds between GitHub App token refreshes. Defaults to 2700 (45 minutes).'
+    required: false
+    default: '2700'
 runs:
   using: 'docker'
   image: 'Dockerfile'

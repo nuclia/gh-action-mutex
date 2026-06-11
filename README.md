@@ -57,9 +57,8 @@ Mutexes are implemented using simple [spinlocks](https://en.wikipedia.org/wiki/S
 
 ## Developing Locally
 
-1. Install [act](https://github.com/nektos/act)
-1. Populate `.github-token` with a personal access token with the `repo` permision.
-1. `act --rebuild -v -s GITHUB_TOKEN=$(cat .github-token)`
+1. Run `npm test` to execute the unit tests.
+1. Push a branch or open a pull request to run the GitHub Actions integration workflows.
 
 ## Inspirations
 

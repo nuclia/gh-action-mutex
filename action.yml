@@ -28,7 +28,7 @@ inputs:
   internal_checkout-location:
     description: '[Internal] The location to store the mutex repo'
     required: false
-    default: '/run/gh-action-mutex/repo'
+    default: ''
   ticket-id-suffix:
     description: 'Ticket id suffix to avoid identical values for parallel/matrix jobs in the same workflow run'
     required: false
@@ -58,26 +58,10 @@ inputs:
     required: false
     default: ''
   token-refresh-interval:
-    description: 'Interval in seconds between GitHub App token refreshes. Defaults to 2700 (45 minutes).'
+    description: 'Compatibility input from the Docker implementation. GitHub App tokens are refreshed before remote git operations.'
     required: false
     default: '2700'
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  env:
-    ARG_BRANCH: ${{ inputs.branch }}
-    ARG_CHECKOUT_LOCATION: ${{ inputs.internal_checkout-location }}
-    ARG_GITHUB_SERVER: ${{ inputs.github_server }}
-    ARG_REPOSITORY: ${{ inputs.repository }}
-    ARG_REPO_TOKEN: ${{ inputs.repo-token }}
-    ARG_DEBUG: ${{ inputs.debug }}
-    ARG_TICKET_ID_SUFFIX: ${{ inputs.ticket-id-suffix}}
-    ARG_OPERATION: ${{ inputs.operation }}
-    ARG_MUTEX_KEY: ${{ inputs.mutex-key }}
-    ARG_POST_EXECUTION: ${{ inputs.run-post-execution }}
-    ARG_GITHUB_APP_ID: ${{ inputs.github-app-id }}
-    ARG_GITHUB_APP_PRIVATE_KEY: ${{ inputs.github-app-private-key }}
-    ARG_GITHUB_APP_INSTALLATION_ID: ${{ inputs.github-app-installation-id }}
-    ARG_TOKEN_REFRESH_INTERVAL: ${{ inputs.token-refresh-interval }}
-  entrypoint: /scripts/main.sh
-  post-entrypoint: /scripts/unlock.sh
+  using: 'node24'
+  main: 'src/index.js'
+  post: 'src/post.js'

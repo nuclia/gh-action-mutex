@@ -44,12 +44,49 @@ test('retries enqueue when pushing fails once', async () => {
       }
       return '';
     },
-    updateBranch: async () => {},
+    updateBranch: async () => {
+      await writeFile(queueFile, '');
+    },
   });
 
   await mutex.enqueue({ branch: 'locks', queueFile: 'mutex_queue' }, 'ticket-a');
 
   assert.equal(calls.filter((call) => call.startsWith('push ')).length, 2);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('refetches and rebuilds enqueue after push race rejection', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'mutex-test-'));
+  const queueFile = join(dir, 'mutex_queue');
+  let updateCount = 0;
+  let pushCount = 0;
+  const mutex = createMutex({
+    queueFile,
+    sleep: async () => {},
+    git: async (args) => {
+      if (args[0] === 'push') {
+        pushCount += 1;
+        if (pushCount === 1) {
+          throw new Error('fetch first');
+        }
+      }
+      return '';
+    },
+    updateBranch: async () => {
+      updateCount += 1;
+      if (updateCount === 1) {
+        await writeFile(queueFile, 'ticket-a\n');
+      } else {
+        await writeFile(queueFile, 'ticket-a\nticket-b\n');
+      }
+    },
+  });
+
+  await mutex.enqueue({ branch: 'locks' }, 'ticket-client-2');
+
+  assert.equal(updateCount, 2);
+  assert.equal(pushCount, 2);
+  assert.equal(await readFile(queueFile, 'utf8'), 'ticket-a\nticket-b\nticket-client-2\n');
   await rm(dir, { recursive: true, force: true });
 });
 

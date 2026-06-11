@@ -82,12 +82,7 @@ function createMutex(options = {}) {
   }
 
   async function pushWithRetry(config) {
-    try {
-      await git(['push', '--set-upstream', 'origin', config.branch]);
-    } catch (error) {
-      await sleepImpl(1000);
-      await git(['push', '--set-upstream', 'origin', config.branch]);
-    }
+    await git(['push', '--set-upstream', 'origin', config.branch]);
   }
 
   async function commitQueue(config, message) {
@@ -104,7 +99,12 @@ function createMutex(options = {}) {
     if (!lines.includes(ticketId)) {
       lines.push(ticketId);
       await writeQueue(queueFile, lines);
-      await commitQueue(config, `[${ticketId}] Enqueue`);
+      try {
+        await commitQueue(config, `[${ticketId}] Enqueue`);
+      } catch (error) {
+        await sleepImpl(1000);
+        await enqueue(config, ticketId);
+      }
     }
   }
 
@@ -120,7 +120,12 @@ function createMutex(options = {}) {
   async function dequeue(config, ticketId) {
     await updateBranch(config);
     const message = await removeTicketFromQueue(queueFile, ticketId);
-    await commitQueue(config, message);
+    try {
+      await commitQueue(config, message);
+    } catch (error) {
+      await sleepImpl(1000);
+      await dequeue(config, ticketId);
+    }
   }
 
   async function lock(config, ticketId) {

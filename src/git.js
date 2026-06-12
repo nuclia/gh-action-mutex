@@ -110,12 +110,14 @@ function createMutex(options = {}) {
   }
 
   async function waitForLock(config, ticketId) {
-    await updateBranch(config);
-    const lines = await readQueue(queueFile);
-    if (lines.length > 0 && lines[0] !== ticketId) {
+    while (true) {
+      await updateBranch(config);
+      const lines = await readQueue(queueFile);
+      if (lines.length === 0 || lines[0] === ticketId) {
+        break;
+      }
       info(`[${ticketId}] Waiting for lock - Current lock assigned to [${lines[0]}]`);
       await sleepImpl(5000);
-      await waitForLock(config, ticketId);
     }
   }
 

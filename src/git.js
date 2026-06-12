@@ -60,6 +60,7 @@ async function removeTicketFromQueue(queuePath, ticketId) {
 
 function createMutex(options = {}) {
   const git = options.git;
+  const info = options.info || (() => {});
   const sleepImpl = options.sleep || sleep;
   const queueFile = options.queueFile || DEFAULT_QUEUE_FILE;
   const updateBranchOverride = options.updateBranch;
@@ -112,6 +113,7 @@ function createMutex(options = {}) {
     await updateBranch(config);
     const lines = await readQueue(queueFile);
     if (lines.length > 0 && lines[0] !== ticketId) {
+      info(`[${ticketId}] Waiting for lock - Current lock assigned to [${lines[0]}]`);
       await sleepImpl(5000);
       await waitForLock(config, ticketId);
     }
@@ -146,7 +148,7 @@ function createMutex(options = {}) {
   };
 }
 
-async function createDefaultMutex(config) {
+async function createDefaultMutex(config, options = {}) {
   await mkdir(config.checkoutLocation, { recursive: true });
   const git = createGitRunner(config.checkoutLocation);
   await git(['init']);
@@ -156,7 +158,7 @@ async function createDefaultMutex(config) {
   await refreshConfigToken(config);
   await git(['remote', 'add', 'origin', repoUrl(config)]);
 
-  return createMutex({ git, queueFile: join(config.checkoutLocation, DEFAULT_QUEUE_FILE) });
+  return createMutex({ git, info: options.info, queueFile: join(config.checkoutLocation, DEFAULT_QUEUE_FILE) });
 }
 
 module.exports = {

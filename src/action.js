@@ -69,7 +69,7 @@ async function runMain(options = {}) {
     let config = buildConfig(core, options.env || process.env);
     config = await resolveConfigToken(config, core);
     const ticketId = buildTicketId(config, options.env || process.env);
-    const mutex = options.mutex || await createDefaultMutex(config);
+    const mutex = options.mutex || await createDefaultMutex(config, { info: core.info });
 
     if (config.operation === 'lock') {
       core.saveState('ticket_id', ticketId);
@@ -101,7 +101,7 @@ async function runPost(options = {}) {
 
     config = await resolveConfigToken(config, core);
     const ticketId = core.getState('ticket_id') || buildTicketId(config, options.env || process.env);
-    const mutex = options.mutex || await createDefaultMutex(config);
+    const mutex = options.mutex || await createDefaultMutex(config, { info: core.info });
     await mutex.unlock(config, ticketId);
     core.info('Successfully unlocked');
   } catch (error) {

@@ -29,6 +29,9 @@ test('generates a signed GitHub App JWT', () => {
 });
 
 test('fetches installation token and masks it', async () => {
+  let capturedUrl;
+  let capturedOptions;
+
   const token = await getInstallationToken({
     appId: '1',
     privateKey: generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey.export({ type: 'pkcs1', format: 'pem' }),
@@ -36,13 +39,19 @@ test('fetches installation token and masks it', async () => {
     repository: 'owner/repo',
     githubServer: 'github.com',
     now: 1700000000,
-    fetch: async () => ({
-      ok: true,
-      async json() {
-        return { token: 'installation-token' };
-      },
-    }),
+    fetch: async (url, options) => {
+      capturedUrl = url;
+      capturedOptions = options;
+      return {
+        ok: true,
+        async json() {
+          return { token: 'installation-token' };
+        },
+      };
+    },
   });
 
   assert.equal(token, 'installation-token');
+  assert.equal(capturedUrl, 'https://api.github.com/app/installations/99/access_tokens');
+  assert.equal(capturedOptions.method, 'POST');
 });

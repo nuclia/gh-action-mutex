@@ -119,3 +119,29 @@ test('refreshes GitHub App token before remote network operations', async () => 
   assert.ok(urls.some((url) => url.includes('fresh-token')));
   await rm(dir, { recursive: true, force: true });
 });
+
+test('logs progress while waiting for another ticket to release the lock', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'mutex-test-'));
+  const queueFile = join(dir, 'mutex_queue');
+  const messages = [];
+  let updateCount = 0;
+  const mutex = createMutex({
+    queueFile,
+    sleep: async () => {},
+    info: (message) => messages.push(message),
+    git: async () => '',
+    updateBranch: async () => {
+      updateCount += 1;
+      if (updateCount === 1) {
+        await writeFile(queueFile, 'ticket-a\nticket-b\n');
+      } else {
+        await writeFile(queueFile, 'ticket-b\n');
+      }
+    },
+  });
+
+  await mutex.waitForLock({ branch: 'locks' }, 'ticket-b');
+
+  assert.deepEqual(messages, ['[ticket-b] Waiting for lock - Current lock assigned to [ticket-a]']);
+  await rm(dir, { recursive: true, force: true });
+});

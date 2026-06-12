@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const { generateKeyPairSync } = require('node:crypto');
 const test = require('node:test');
 
 const {
@@ -16,7 +17,7 @@ test('selects enterprise API URL for custom server', () => {
 });
 
 test('generates a signed GitHub App JWT', () => {
-  const { privateKey } = require('node:crypto').generateKeyPairSync('rsa', { modulusLength: 2048 });
+  const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
   const pem = privateKey.export({ type: 'pkcs1', format: 'pem' });
 
   const jwt = generateJwt('12345', pem, 1700000000);
@@ -28,16 +29,19 @@ test('generates a signed GitHub App JWT', () => {
 });
 
 test('fetches installation token and masks it', async () => {
-  const requests = [];
+  let capturedUrl;
+  let capturedOptions;
+
   const token = await getInstallationToken({
     appId: '1',
-    privateKey: require('node:crypto').generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey.export({ type: 'pkcs1', format: 'pem' }),
+    privateKey: generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey.export({ type: 'pkcs1', format: 'pem' }),
     installationId: '99',
     repository: 'owner/repo',
     githubServer: 'github.com',
     now: 1700000000,
     fetch: async (url, options) => {
-      requests.push([url, options.method || 'GET']);
+      capturedUrl = url;
+      capturedOptions = options;
       return {
         ok: true,
         async json() {
@@ -48,5 +52,6 @@ test('fetches installation token and masks it', async () => {
   });
 
   assert.equal(token, 'installation-token');
-  assert.deepEqual(requests, [['https://api.github.com/app/installations/99/access_tokens', 'POST']]);
+  assert.equal(capturedUrl, 'https://api.github.com/app/installations/99/access_tokens');
+  assert.equal(capturedOptions.method, 'POST');
 });
